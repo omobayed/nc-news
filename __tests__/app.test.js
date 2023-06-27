@@ -129,6 +129,7 @@ describe("/api/articles/:article_id/comments", () => {
                     expect(comment).toHaveProperty("body", expect.any(String));
                     expect(comment).toHaveProperty("article_id", expect.any(Number));
                 })
+                expect(comments).toBeSortedBy('created_at', {descending: true});
             })
     })
     test("400: Error - should return bad request when passing invalid article_id", () => {
