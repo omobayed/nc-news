@@ -44,10 +44,45 @@ describe("GET /api/topics", () => {
 describe("invalid route", () => {
     test("404: Error - responds with an error when the route is not exist", () => {
         return request(app)
-            .get("/books")
+            .get("/api/not-an-endpoint")
             .expect(404)
             .then(({ body }) => {
                 expect(body.msg).toBe("Not found")
+            })
+    })
+})
+
+describe("GET /api/articles/:article_id", () => {
+    test("200: should respond with an article object which have the specific id", () => {
+        return request(app)
+            .get("/api/articles/2")
+            .expect(200)
+            .then(({ body }) => {
+                const { article } = body;
+                expect(article).toHaveProperty("article_id", 2);
+                expect(article).toHaveProperty("author", expect.any(String));
+                expect(article).toHaveProperty("title", expect.any(String));
+                expect(article).toHaveProperty("body", expect.any(String));
+                expect(article).toHaveProperty("topic", expect.any(String));
+                expect(article).toHaveProperty("created_at", expect.any(String));
+                expect(article).toHaveProperty("votes", expect.any(Number));
+                expect(article).toHaveProperty("article_img_url", expect.any(String));
+            })
+    })
+    test("400: Error - should return bad request when passing invalid article_id", () => {
+        return request(app)
+            .get("/api/articles/banana")
+            .expect(400)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Bad Request" });
+            })
+    })
+    test("404: Error - should return Not found when passing not existed article_id", () => {
+        return request(app)
+            .get("/api/articles/455")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Not found" });
             })
     })
 })
