@@ -149,4 +149,13 @@ describe("/api/articles/:article_id/comments", () => {
                 expect(comments).toHaveLength(0);
             })
     })
+    test("404: Error - should return Not found when passing not existed article_id", () => {
+        return request(app)
+            .get("/api/articles/455/comments")
+            .expect(404)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Not found" });
+            })
+
+    })
 })
