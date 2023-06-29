@@ -1,5 +1,5 @@
 const { selectArticleById } = require("../models/articles.model");
-const { selectCommentsByArticleId, insertCommentToArticle } = require("../models/comments.model");
+const { selectCommentsByArticleId, insertCommentToArticle, deleteCommentById } = require("../models/comments.model");
 const { selectUserByUsername } = require("../models/users.model");
 
 exports.getCommentsByArticleId = (req, res, next) => {
@@ -24,6 +24,15 @@ exports.addCommentToArticle = (req, res, next) => {
         })
         .then((comment) => {
             res.status(201).send({ comment })
+        })
+        .catch(next);
+}
+
+exports.deleteComment = (req, res, next) => {
+    const { comment_id } = req.params;
+    deleteCommentById(comment_id)
+        .then(() => {
+            res.status(204).send();
         })
         .catch(next);
 }
