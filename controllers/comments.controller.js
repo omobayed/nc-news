@@ -20,9 +20,6 @@ exports.addCommentToArticle = (req, res, next) => {
 
     selectArticleById(article_id)
         .then((article) => {
-            return selectUserByUsername(username)
-        })
-        .then((user) => {
             return insertCommentToArticle(article_id, username, body)
         })
         .then((comment) => {

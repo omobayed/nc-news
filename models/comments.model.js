@@ -14,5 +14,8 @@ exports.insertCommentToArticle = (articleId, username, body) => {
             "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;",
             [articleId, username, body]
         )
-        .then(({ rows }) => rows[0]);
+        .then(({ rows }) => rows[0])
+        .catch((error) => {
+            return Promise.reject({ status: 404, msg: error.detail })
+        });
 }

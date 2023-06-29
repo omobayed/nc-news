@@ -238,7 +238,7 @@ describe("POST: /api/articles/:article_id/comments", () => {
             .send(newComment)
             .expect(404)
             .then(({ body }) => {
-                expect(body).toEqual({ msg: "User not found" });
+                expect(body).toEqual({ msg: "Key (author)=(non-user) is not present in table \"users\"." });
             })
     })
     test("400: Error - should return bad request when comment has no body property", () => {
