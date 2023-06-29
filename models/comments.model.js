@@ -7,3 +7,12 @@ exports.selectCommentsByArticleId = (articleId) => {
             return result.rows;
         })
 }
+
+exports.insertCommentToArticle = (articleId, username, body) => {
+    return db
+        .query(
+            "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;",
+            [articleId, username, body]
+        )
+        .then(({ rows }) => rows[0]);
+}
