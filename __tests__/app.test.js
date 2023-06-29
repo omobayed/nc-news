@@ -266,3 +266,59 @@ describe("POST: /api/articles/:article_id/comments", () => {
             })
     })
 })
+
+describe("PATCH:/api/articles/:article_id", () => {
+    test("200 : should responds with an updated article ", () => {
+        return request(app)
+            .patch('/api/articles/3')
+            .send({ inc_votes: 1 })
+            .expect(200)
+            .then(({ body }) => {
+                const { article } = body;
+                expect(article).toHaveProperty("article_id", 3);
+                expect(article).toHaveProperty("author", expect.any(String));
+                expect(article).toHaveProperty("title", expect.any(String));
+                expect(article).toHaveProperty("body", expect.any(String));
+                expect(article).toHaveProperty("topic", expect.any(String));
+                expect(article).toHaveProperty("created_at", expect.any(String));
+                expect(article).toHaveProperty("votes", 1);
+                expect(article).toHaveProperty("article_img_url", expect.any(String));
+            })
+    })
+    test("400: Error - should return bad request when passing invalid article_id", () => {
+        return request(app)
+            .patch('/api/articles/car')
+            .send({ inc_votes: 1 })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Bad Request" });
+            })
+    })
+    test("404: Error - should return Not found when passing not existed article_id", () => {
+        return request(app)
+            .patch("/api/articles/455")
+            .send({ inc_votes: 1 })
+            .expect(404)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Article not found" });
+            })
+    })
+    test("400: Error - should return bad request when passing invalid inc_votes ", () => {
+        return request(app)
+            .patch('/api/articles/3')
+            .send({ inc_votes: "car" })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Bad Request" });
+            })
+    })
+    test("400: Error - should return bad request when not passing inc_votes ", () => {
+        return request(app)
+            .patch('/api/articles/3')
+            .send({ type: "non" })
+            .expect(400)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Bad Request" });
+            })
+    })
+})
