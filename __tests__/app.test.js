@@ -327,7 +327,8 @@ describe("DELETE:/api/comments/:comment_id", ()=>{
         return request(app)
         .delete('/api/comments/3')
         .expect(204)
-        .then(()=>{
+        .then(({body})=>{
+            expect(body).toEqual({})
         })
     })
     test("404: Error - should return Not found when passing valid but not existed comment_id", () => {
