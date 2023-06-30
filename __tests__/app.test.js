@@ -322,14 +322,14 @@ describe("PATCH:/api/articles/:article_id", () => {
             })
     })
 })
-describe("DELETE:/api/comments/:comment_id", ()=>{
-    test("204:should responds with status 204 no content  " ,()=>{
+describe("DELETE:/api/comments/:comment_id", () => {
+    test("204:should responds with status 204 no content  ", () => {
         return request(app)
-        .delete('/api/comments/3')
-        .expect(204)
-        .then(({body})=>{
-            expect(body).toEqual({})
-        })
+            .delete('/api/comments/3')
+            .expect(204)
+            .then(({ body }) => {
+                expect(body).toEqual({})
+            })
     })
     test("404: Error - should return Not found when passing valid but not existed comment_id", () => {
         return request(app)
@@ -345,6 +345,23 @@ describe("DELETE:/api/comments/:comment_id", ()=>{
             .expect(400)
             .then(({ body }) => {
                 expect(body).toEqual({ msg: "Bad Request" });
+            })
+    })
+})
+describe("GET: /api/users", () => {
+    test("200: should responds with all users", () => {
+        return request(app)
+            .get('/api/users')
+            .expect(200)
+            .then(({ body }) => {
+                const { users } = body;
+                expect(users).toBeInstanceOf(Array);
+                expect(users).toHaveLength(4);
+                users.forEach((user) => {
+                    expect(user).toHaveProperty("username", expect.any(String));
+                    expect(user).toHaveProperty("name", expect.any(String));
+                    expect(user).toHaveProperty("avatar_url", expect.any(String));
+                })
             })
     })
 })
