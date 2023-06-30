@@ -1,3 +1,4 @@
+const { query } = require("express");
 const db = require("../db/connection")
 
 exports.selectArticleById = (article_id) => {
@@ -11,15 +12,42 @@ exports.selectArticleById = (article_id) => {
         });
 }
 
-exports.selectAllArticles = () => {
-    const queryStr = 'SELECT articles.author, title, articles.article_id, topic, articles.created_at, article_img_url, articles.votes, COUNT(comment_id) AS comment_count ' +
+exports.selectAllArticles = (topic, sort_by, order) => {
+    const validSortBy = ["title", "topic", "author", "created_at", "votes", "article_id"];
+    const validOrder = ["desc", "asc"];
+
+    const queryValues = [];
+    let queryStr = 'SELECT articles.author, title, articles.article_id, topic, articles.created_at, article_img_url, articles.votes, COUNT(comment_id) AS comment_count ' +
         'FROM articles ' +
-        'LEFT OUTER JOIN comments ON articles.article_id = comments.article_id ' +
-        'GROUP BY articles.article_id ' +
-        'ORDER BY created_at DESC;'
+        'LEFT OUTER JOIN comments ON articles.article_id = comments.article_id ';
+
+    if (topic) {
+        queryStr += "WHERE articles.topic = $1 ";
+        queryValues.push(topic);
+    }
+
+    queryStr += 'GROUP BY articles.article_id ';
+    if (!order) {
+        order = "desc";
+    }
+    else {
+        if (!validOrder.includes(order)) {
+            return Promise.reject({ status: 400, msg: "Bad Request" });
+        }
+    }
+
+    if (sort_by) {
+        if (!validSortBy.includes(sort_by)) {
+            return Promise.reject({ status: 400, msg: "Bad Request" });
+        }
+        queryStr += `ORDER BY ${sort_by} ${order};`;
+    }
+    else {
+        queryStr += `ORDER BY created_at ${order};`;
+    }
 
     return db
-        .query(queryStr)
+        .query(queryStr, queryValues)
         .then((result) => {
             return result.rows;
         })
