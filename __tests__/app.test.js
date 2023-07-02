@@ -122,6 +122,16 @@ describe("GET /api/articles", () => {
                 })
             })
     })
+    test("200: should return an empty arry when passing an existing topic that has no articles", () => {
+        return request(app)
+            .get('/api/articles?topic=paper')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toBeInstanceOf(Array);
+                expect(articles).toHaveLength(0);
+            })
+    })
     test("200: takes a sort_by query which responds with articles sorted by any column (defaults to date)", () => {
         return request(app)
             .get('/api/articles?sort_by=article_id')
@@ -181,6 +191,14 @@ describe("GET /api/articles", () => {
             .expect(400)
             .then(({ body }) => {
                 expect(body).toEqual({ msg: "Bad Request" });
+            })
+    })
+    test("404: Error - should return not found when passing non existing topic", () => {
+        return request(app)
+            .get('/api/articles?topic=banana')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Topic Not Found" });
             })
     })
 })
