@@ -1,6 +1,5 @@
 const { selectArticleById } = require("../models/articles.model");
 const { selectCommentsByArticleId, insertCommentToArticle, deleteCommentById } = require("../models/comments.model");
-const { selectUserByUsername } = require("../models/users.model");
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const { article_id } = req.params;

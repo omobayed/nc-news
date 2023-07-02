@@ -110,6 +110,97 @@ describe("GET /api/articles", () => {
                 expect(articles).toBeSortedBy('created_at', { descending: true })
             })
     })
+    test("200: takes a topic query which responds with only articles with that topic", () => {
+        return request(app)
+            .get('/api/articles?topic=cats')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toHaveLength(1);
+                articles.forEach((article) => {
+                    expect(article.topic).toBe("cats");
+                })
+            })
+    })
+    test("200: should return an empty arry when passing an existing topic that has no articles", () => {
+        return request(app)
+            .get('/api/articles?topic=paper')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toBeInstanceOf(Array);
+                expect(articles).toHaveLength(0);
+            })
+    })
+    test("200: takes a sort_by query which responds with articles sorted by any column (defaults to date)", () => {
+        return request(app)
+            .get('/api/articles?sort_by=article_id')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toHaveLength(13);
+                expect(articles).toBeSortedBy('article_id', { descending: true });
+
+            })
+    })
+
+    test("200: takes an order query which responds with articles ordered asc or desc (defaults to desc", () => {
+        return request(app)
+            .get('/api/articles?order=asc')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toHaveLength(13);
+                expect(articles).toBeSortedBy('created_at');
+
+            })
+    })
+    test("200: takes a sort_by and an order queries which responds with articles sorted and ordered depends on the queries", () => {
+        return request(app)
+            .get('/api/articles?sort_by=author&order=desc')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toHaveLength(13);
+                expect(articles).toBeSortedBy('author', { descending: true });
+
+            })
+    })
+    test("200: takes a sort_by and an order queries which responds with articles sorted and ordered depends on the queries", () => {
+        return request(app)
+            .get('/api/articles?sort_by=votes&order=asc')
+            .expect(200)
+            .then(({ body }) => {
+                const { articles } = body;
+                expect(articles).toHaveLength(13);
+                expect(articles).toBeSortedBy('votes');
+
+            })
+    })
+    test("400: Error - should return bad request when passing invalid column in sort_by query", () => {
+        return request(app)
+            .get('/api/articles?sort_by=banana')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Bad Request" });
+            })
+    })
+    test("400: Error - should return bad request when passing invalid order", () => {
+        return request(app)
+            .get('/api/articles?order=car')
+            .expect(400)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Bad Request" });
+            })
+    })
+    test("404: Error - should return not found when passing non existing topic", () => {
+        return request(app)
+            .get('/api/articles?topic=banana')
+            .expect(404)
+            .then(({ body }) => {
+                expect(body).toEqual({ msg: "Topic Not Found" });
+            })
+    })
 })
 
 describe("/api/articles/:article_id/comments", () => {
@@ -322,6 +413,7 @@ describe("PATCH:/api/articles/:article_id", () => {
             })
     })
 })
+
 describe("DELETE:/api/comments/:comment_id", () => {
     test("204:should responds with status 204 no content  ", () => {
         return request(app)
@@ -348,6 +440,7 @@ describe("DELETE:/api/comments/:comment_id", () => {
             })
     })
 })
+
 describe("GET: /api/users", () => {
     test("200: should responds with all users", () => {
         return request(app)
