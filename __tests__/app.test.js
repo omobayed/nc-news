@@ -67,6 +67,7 @@ describe("GET /api/articles/:article_id", () => {
                 expect(article).toHaveProperty("created_at", expect.any(String));
                 expect(article).toHaveProperty("votes", expect.any(Number));
                 expect(article).toHaveProperty("article_img_url", expect.any(String));
+                expect(article).toHaveProperty("comment_count", expect.any(String));
             })
     })
     test("400: Error - should return bad request when passing invalid article_id", () => {
