@@ -18,7 +18,7 @@ exports.selectArticleById = (article_id) => {
 }
 
 exports.selectAllArticles = (topic, sort_by, order) => {
-    const validSortBy = ["title", "topic", "author", "created_at", "votes", "article_id"];
+    const validSortBy = ["title", "topic", "author", "created_at", "votes", "article_id", "comment_count"];
     const validOrder = ["desc", "asc"];
 
     const queryValues = [];
